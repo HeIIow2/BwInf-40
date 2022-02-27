@@ -2,14 +2,18 @@ import rechenrätsel_multiprocessing
 
 import time
 
-test_cases = list(range(14))
+test_cases = list(range(16))
 
 def test():
     times = []
 
     for test_case in test_cases:
         start_time = time.time()
-        result, exercise = rechenrätsel_multiprocessing.get_therm(test_case)
+        try:
+            result, exercise = rechenrätsel_multiprocessing.get_therm(test_case)
+        except Exception as e:
+            print(e)
+            result, exercise = "FAIL", "FAIL"
         end_time = time.time()
 
         therm, res = result.split(" = ")
@@ -27,5 +31,5 @@ def test():
 
 
 if __name__ == '__main__':
-    for k in range(3):
+    while True:
         test()

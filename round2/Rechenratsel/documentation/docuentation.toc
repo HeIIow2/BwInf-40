@@ -3,7 +3,10 @@
 \contentsline {subsection}{\numberline {1.1}naive Herangehensweise}{1}{}%
 \contentsline {subsection}{\numberline {1.2}erfolgreiche Herangehensweise}{2}{}%
 \contentsline {section}{\numberline {2}Umsetzung}{2}{}%
-\contentsline {section}{\numberline {3}Beispiele}{2}{}%
-\contentsline {section}{\numberline {4}Quellcode}{2}{}%
-\contentsline {section}{\numberline {5}Erweiterung}{2}{}%
+\contentsline {section}{\numberline {3}Theoretische Laufzeitanalyse}{2}{}%
+\contentsline {subsection}{\numberline {3.1}Praktische Laufzeitanalyse}{2}{}%
+\contentsline {subsection}{\numberline {3.2}Laufzeitanalyse}{2}{}%
+\contentsline {section}{\numberline {4}Beispiele}{2}{}%
+\contentsline {section}{\numberline {5}Quellcode}{2}{}%
+\contentsline {section}{\numberline {6}Erweiterung}{2}{}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
