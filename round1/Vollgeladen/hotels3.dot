@@ -1,0 +1,27 @@
+digraph hotels3
+{
+start -> "hotel 56\nrating 4.9" -> "hotel 152\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 301\nrating 4.8";
+start -> "hotel 56\nrating 4.9" -> "hotel 152\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 314\nrating 4.8";
+start -> "hotel 56\nrating 4.9" -> "hotel 152\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 316\nrating 4.8";
+start -> "hotel 56\nrating 4.9" -> "hotel 161\nrating 4.9" -> "hotel 229\nrating 4.8" -> "hotel 301\nrating 4.8";
+start -> "hotel 56\nrating 4.9" -> "hotel 161\nrating 4.9" -> "hotel 229\nrating 4.8" -> "hotel 314\nrating 4.8";
+start -> "hotel 56\nrating 4.9" -> "hotel 161\nrating 4.9" -> "hotel 229\nrating 4.8" -> "hotel 316\nrating 4.8";
+start -> "hotel 77\nrating 4.9" -> "hotel 152\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 301\nrating 4.8";
+start -> "hotel 77\nrating 4.9" -> "hotel 152\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 314\nrating 4.8";
+start -> "hotel 77\nrating 4.9" -> "hotel 152\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 316\nrating 4.8";
+start -> "hotel 77\nrating 4.9" -> "hotel 169\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 301\nrating 4.8";
+start -> "hotel 77\nrating 4.9" -> "hotel 169\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 314\nrating 4.8";
+start -> "hotel 77\nrating 4.9" -> "hotel 169\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 316\nrating 4.8";
+start -> "hotel 77\nrating 4.9" -> "hotel 161\nrating 4.9" -> "hotel 229\nrating 4.8" -> "hotel 301\nrating 4.8";
+start -> "hotel 77\nrating 4.9" -> "hotel 161\nrating 4.9" -> "hotel 229\nrating 4.8" -> "hotel 314\nrating 4.8";
+start -> "hotel 77\nrating 4.9" -> "hotel 161\nrating 4.9" -> "hotel 229\nrating 4.8" -> "hotel 316\nrating 4.8";
+start -> "hotel 85\nrating 4.8" -> "hotel 152\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 301\nrating 4.8";
+start -> "hotel 85\nrating 4.8" -> "hotel 152\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 314\nrating 4.8";
+start -> "hotel 85\nrating 4.8" -> "hotel 152\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 316\nrating 4.8";
+start -> "hotel 85\nrating 4.8" -> "hotel 169\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 301\nrating 4.8";
+start -> "hotel 85\nrating 4.8" -> "hotel 169\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 314\nrating 4.8";
+start -> "hotel 85\nrating 4.8" -> "hotel 169\nrating 5.0" -> "hotel 229\nrating 4.8" -> "hotel 316\nrating 4.8";
+start -> "hotel 85\nrating 4.8" -> "hotel 161\nrating 4.9" -> "hotel 229\nrating 4.8" -> "hotel 301\nrating 4.8";
+start -> "hotel 85\nrating 4.8" -> "hotel 161\nrating 4.9" -> "hotel 229\nrating 4.8" -> "hotel 314\nrating 4.8";
+start -> "hotel 85\nrating 4.8" -> "hotel 161\nrating 4.9" -> "hotel 229\nrating 4.8" -> "hotel 316\nrating 4.8";
+}

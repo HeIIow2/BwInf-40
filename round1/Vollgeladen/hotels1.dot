@@ -1,0 +1,4 @@
+digraph hotels1
+{
+start -> "hotel 1\nrating 4.8" -> "hotel 4\nrating 3.6" -> "hotel 6\nrating 4.4" -> "hotel 7\nrating 2.8";
+}

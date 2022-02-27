@@ -1,0 +1,21 @@
+digraph hotels4
+{
+start -> "hotel 25\nrating 5.0" -> "hotel 51\nrating 5.0" -> "hotel 143\nrating 4.9" -> "hotel 250\nrating 5.0";
+start -> "hotel 25\nrating 5.0" -> "hotel 106\nrating 4.9" -> "hotel 165\nrating 5.0" -> "hotel 250\nrating 5.0";
+start -> "hotel 25\nrating 5.0" -> "hotel 106\nrating 4.9" -> "hotel 143\nrating 4.9" -> "hotel 250\nrating 5.0";
+start -> "hotel 25\nrating 5.0" -> "hotel 106\nrating 4.9" -> "hotel 170\nrating 4.9" -> "hotel 250\nrating 5.0";
+start -> "hotel 25\nrating 5.0" -> "hotel 106\nrating 4.9" -> "hotel 188\nrating 4.9" -> "hotel 250\nrating 5.0";
+start -> "hotel 25\nrating 5.0" -> "hotel 106\nrating 4.9" -> "hotel 188\nrating 4.9" -> "hotel 277\nrating 5.0";
+start -> "hotel 51\nrating 5.0" -> "hotel 106\nrating 4.9" -> "hotel 165\nrating 5.0" -> "hotel 250\nrating 5.0";
+start -> "hotel 51\nrating 5.0" -> "hotel 106\nrating 4.9" -> "hotel 143\nrating 4.9" -> "hotel 250\nrating 5.0";
+start -> "hotel 51\nrating 5.0" -> "hotel 106\nrating 4.9" -> "hotel 170\nrating 4.9" -> "hotel 250\nrating 5.0";
+start -> "hotel 51\nrating 5.0" -> "hotel 106\nrating 4.9" -> "hotel 188\nrating 4.9" -> "hotel 250\nrating 5.0";
+start -> "hotel 51\nrating 5.0" -> "hotel 106\nrating 4.9" -> "hotel 188\nrating 4.9" -> "hotel 277\nrating 5.0";
+start -> "hotel 51\nrating 5.0" -> "hotel 143\nrating 4.9" -> "hotel 165\nrating 5.0" -> "hotel 250\nrating 5.0";
+start -> "hotel 51\nrating 5.0" -> "hotel 143\nrating 4.9" -> "hotel 250\nrating 5.0" -> "hotel 277\nrating 5.0";
+start -> "hotel 51\nrating 5.0" -> "hotel 143\nrating 4.9" -> "hotel 250\nrating 5.0" -> "hotel 337\nrating 5.0";
+start -> "hotel 51\nrating 5.0" -> "hotel 143\nrating 4.9" -> "hotel 250\nrating 5.0" -> "hotel 331\nrating 4.9";
+start -> "hotel 51\nrating 5.0" -> "hotel 143\nrating 4.9" -> "hotel 170\nrating 4.9" -> "hotel 250\nrating 5.0";
+start -> "hotel 51\nrating 5.0" -> "hotel 143\nrating 4.9" -> "hotel 188\nrating 4.9" -> "hotel 250\nrating 5.0";
+start -> "hotel 51\nrating 5.0" -> "hotel 143\nrating 4.9" -> "hotel 188\nrating 4.9" -> "hotel 277\nrating 5.0";
+}
