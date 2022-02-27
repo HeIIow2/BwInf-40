@@ -201,7 +201,7 @@ def get_therm(n: int, minimum=0, maximum=9):
         return "No.", "still No."
     if n == 0:
         random_number = random.randint(minimum + 1, maximum)
-        return f"{random_number} = {random_number}"
+        return f"{random_number} = {random_number}", f"{random_number} = {random_number}"
 
     """
     füllt die Liste mit möglichen Ergebnissen auf.

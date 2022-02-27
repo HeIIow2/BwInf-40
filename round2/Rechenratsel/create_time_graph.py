@@ -3,13 +3,35 @@ from scipy.optimize import curve_fit
 import numpy as np
 
 with open("times.csv", "r") as time_file:
-    times = time_file.read().split(", ")
-    for i in range(len(times)):
-        times[i] = float(times[i])
-        if times[i] == 0.0:
-            times[i] = 0.0000000001
+    time_lines = time_file.read().split("\n")
 
-    y = np.array(times[1:])
+    ys = []
+
+    for n, time_line in enumerate(time_lines):
+        if n == 0 or time_line == "":
+            continue
+
+        times = time_line.split(", ")
+        for i in range(len(times)):
+            if i == 0:
+                continue
+
+            i = i-1
+
+            times[i] = float(times[i])
+            if times[i] == 0.0:
+                times[i] = 0.0000000001
+
+            if i >= len(ys):
+                ys.append([])
+            ys[i].append(times[i])
+
+    y = []
+    std = []
+    for i in ys:
+        y.append(np.average(i))
+        std.append(np.std(i))
+
     x = np.arange(1, len(times))
 
     x_ = []
@@ -45,7 +67,7 @@ with open("times.csv", "r") as time_file:
 
     plt.plot(x, y, "o", linewidth=1, label="data")
     plt.plot(x_, func(x_, *popt), label="Fitted Curve")
-    # plt.errorbar(x, y, yerr=standart_deviation, lolims=-abs(standart_deviation), uplims=0, linestyle='None', markersize=0, label=f"Standart Deviation\navr: {round(abs(avr), 2)}; fac: {SCALE_FACTOR}")
+    plt.errorbar(x, y, yerr=std, linestyle='None', markersize=0, label=f"Standart Deviation\navr: {round(np.average(std) ,3)}")
 
     plt.xticks(range(0, max(x)+1))
     
