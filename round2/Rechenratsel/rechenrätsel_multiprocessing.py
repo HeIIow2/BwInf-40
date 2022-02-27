@@ -1,107 +1,93 @@
 from multiprocessing import Pool, freeze_support
 import random
 
-def maybe_get_therm(n, minimum=0, maximum=9):
-    OPERATORS = [" + ", " - ", " * ", " / "]
 
+def generate_operands(n, minimum=0, maximum=9):
+    """
+    generiert eine Liste von Operanden der Länge n
+
+    :param n: die Anzahl an Operatoren
+    :param minimum: der kleinst mögliche Operand
+    :param maximum: der größtmögliche Operand
+    :return: liste von Operanden der Länge n
+    """
+    # liste aller Operanden
     operands = []
+    # queue für die Operanden, da 'echter' Zufall langweilig ist
+    unused_operands = []
 
-    unused_operators = []
-
-    def refresh_unused_operators():
-        nonlocal unused_operators
-        unused_operators = list(range(minimum, maximum + 1))
-        # unused_operators.extend(list(range(4, maximum+1)))
-        random.shuffle(unused_operators)
-        for i, unused_operator in enumerate(unused_operators):
+    # auffüllen der queue
+    def refresh_unused_operands():
+        nonlocal unused_operands
+        unused_operands = list(range(minimum, maximum + 1))
+        random.shuffle(unused_operands)
+        for i, unused_operator in enumerate(unused_operands):
             if random.randint(0, 1) == 0:
                 index_difference = random.randint(1, 2)
                 if i - index_difference >= 0:
                     if i - index_difference > unused_operator:
-                        unused_operators[i] = unused_operators[i - index_difference]
-                        unused_operators[i - index_difference] = unused_operator
+                        unused_operands[i] = unused_operands[i - index_difference]
+                        unused_operands[i - index_difference] = unused_operator
 
-    refresh_unused_operators()
+    refresh_unused_operands()
 
+    # generiere liste von Operanden mit der queue
     new_operand = None
     for i in range(n + 1):
         if len(operands) != 0:
             last_operand = operands[-1]
-            for i, unused_operand in enumerate(unused_operators):
+            # wenn der letzte Operand durch einen der noch in der queue ist teilbar ist, nehme diesen
+            for i, unused_operand in enumerate(unused_operands):
                 if unused_operand != 0 and unused_operand != 1:
                     if last_operand % unused_operand == 0:
                         new_operand = unused_operand
-                        unused_operators.pop(i)
+                        unused_operands.pop(i)
                         break
 
         if new_operand is None:
-            new_operand = unused_operators[0]
-            unused_operators.pop(0)
+            new_operand = unused_operands[0]
+            unused_operands.pop(0)
 
-        if len(unused_operators) == 0:
-            refresh_unused_operators()
+        if len(unused_operands) == 0:
+            refresh_unused_operands()
 
         operands.append(new_operand)
         new_operand = None
 
-    # bekommt eine Liste aller Kombinationen aller Operatoren
-    def get_real_therm(operands_, operators_):
-        therm_string = str(operands_[0])
+    return operands
 
-        multiplication_sub = 1
-        for i, operator_ in enumerate(operators_):
-            if operator_ == 2:
-                multiplication_sub = multiplication_sub * operands_[i]
-            elif operator_ == 3:
-                if operands_[i + 1] == 0 or multiplication_sub * operands_[i] / operands_[i + 1] % 1 != 0:
-                    return ""
-            elif operator_ == 0 or operator_ == 1:
-                multiplication_sub = 1
-            therm_string += OPERATORS[operator_]
-            therm_string += str(operands_[i + 1])
-        return therm_string
 
-    result_frequencies = {
+def maybe_get_therm(n, minimum=0, maximum=9):
+    """
+        generiert eine Liste von Operanden
+        sucht alle eindeutigen Therme
+        gibt alle eindeutigen Therme zurück
 
-    }
+        :param n: die Anzahl an Operatoren
+        :param minimum: der kleinst mögliche Operand
+        :param maximum: der größtmögliche Operand
+        :return: liste potenzieller Lösungen
+    """
 
-    last_list = [0] * n
-    last_list[-1] = -1
-    for i in range((4 ** n)):
-        for i, elem in enumerate(reversed(last_list)):
-            i = len(last_list) - i - 1
-            if elem > 2:
-                last_list[i] = 0
-            else:
-                last_list[i] += 1
-                break
+    OPERATORS = [" + ", " - ", " * ", " / "]
 
-        therm = get_real_therm(operands, last_list)
-        if therm != "":
-            result = eval(therm)
-            if result <= 0:
-                continue
-            if result % 1 != 0:
-                continue
+    # generiere ein liste von operanden
+    operands = generate_operands(n=n, minimum=minimum, maximum=maximum)
 
-            if result in result_frequencies:
-                result_frequencies[result]['freq'] += 1
-            else:
-                result_frequencies[result] = {'freq': 1, 'therm': therm, 'result': int(result)}
+    result_frequencies = compute_combinations(part=0, n=n, operands=operands, threads=1)
 
-    final_results = []
-
-    for result_frequency in result_frequencies:
-        if result_frequencies[result_frequency]['freq'] == 1:
-            final_results.append({
-                'therm': result_frequencies[result_frequency]['therm'],
-                'result': result_frequency
+    unique_therms = []
+    for key in result_frequencies:
+        if result_frequencies[key]["freq"] == 1:
+            unique_therms.append({
+                'therm': result_frequencies[key]['therm'],
+                'result': result_frequencies[key]['result']
             })
 
-    return final_results
+    return unique_therms
 
 
-def compute_combinations(part, n, operands):
+def compute_combinations(part, n, operands, threads=4):
     OPERATORS = [
         " + ",
         " - ",
@@ -133,7 +119,7 @@ def compute_combinations(part, n, operands):
     last_list[0] = part
     last_list[-1] = -1
 
-    for i in range(int((4 ** n) / 4)):
+    for i in range(int((4 ** n) / threads)):
         for i, elem in enumerate(reversed(last_list)):
             i = len(last_list) - i - 1
             if elem > 2:
@@ -159,45 +145,24 @@ def compute_combinations(part, n, operands):
 
 
 def maybe_get_therm_multiprocessing(n, minimum=0, maximum=9):
-    operands = []
+    """
+    generiert eine Liste von Operanden
+    started threads, die jeweils ein Teil aller Lösungen eindeutigen Therme
+    schaut wenn alle threads fertig sind ob die Lösungen wirklich eindeutig sind,
+    gibt alle eindeutigen Therme zurück
 
-    unused_operators = []
-    def refresh_unused_operators():
-        nonlocal unused_operators
-        unused_operators = list(range(minimum, maximum + 1))
-        random.shuffle(unused_operators)
-        for i, unused_operator in enumerate(unused_operators):
-            if random.randint(0, 1) == 0:
-                index_difference = random.randint(1, 2)
-                if i - index_difference >= 0:
-                    if i - index_difference > unused_operator:
-                        unused_operators[i] = unused_operators[i - index_difference]
-                        unused_operators[i - index_difference] = unused_operator
-    refresh_unused_operators()
+    :param n: die Anzahl an Operatoren
+    :param minimum: der kleinst mögliche Operand
+    :param maximum: der größtmögliche Operand
+    :return: liste potenzieller Lösungen
+    """
 
-    new_operand = None
-    for i in range(n + 1):
-        if len(operands) != 0:
-            last_operand = operands[-1]
-            for i, unused_operand in enumerate(unused_operators):
-                if unused_operand != 0 and unused_operand != 1:
-                    if last_operand % unused_operand == 0:
-                        new_operand = unused_operand
-                        unused_operators.pop(i)
-                        break
-
-        if new_operand is None:
-            new_operand = unused_operators[0]
-            unused_operators.pop(0)
-
-        if len(unused_operators) == 0:
-            refresh_unused_operators()
-
-        operands.append(new_operand)
-        new_operand = None
+    # generiere ein liste von operanden
+    operands = generate_operands(n=n, minimum=minimum, maximum=maximum)
 
     with Pool() as pool:
-        result = pool.starmap(compute_combinations, [(0, n, operands), (1, n, operands), (2, n, operands), (3, n, operands)])
+        result = pool.starmap(compute_combinations,
+                              [(0, n, operands), (1, n, operands), (2, n, operands), (3, n, operands)])
         print("multiprocessing done")
 
         unique_therms = []
@@ -221,19 +186,39 @@ def maybe_get_therm_multiprocessing(n, minimum=0, maximum=9):
 
 
 def get_therm(n: int, minimum=0, maximum=9):
+    """
+    https://bwinf.de/fileadmin/bundeswettbewerb/40/aufgaben402.pdf
+    Diese Funktion löst die Aufgabe Rechenrätsel
+
+    :param n: die Anzahl an Operatoren
+    :param minimum: der kleinst mögliche Operand
+    :param maximum: der größtmögliche Operand
+    :return: tuple (Lösung, Aufgabe)
+    """
+
+    # edge cases
     if n < 0:
-        return "No."
+        return "No.", "still No."
     if n == 0:
         random_number = random.randint(minimum + 1, maximum)
         return f"{random_number} = {random_number}"
 
-
+    """
+    füllt die Liste mit möglichen Ergebnissen auf.
+    nutzt ab n < 8 Parallelisierung, da vorher thread pulling 
+    länger als die eigentliche Aufgabe braucht.
+    """
     results = []
     while not len(results):
         if n < 8:
             results = maybe_get_therm(n, minimum=minimum, maximum=maximum)
         else:
             results = maybe_get_therm_multiprocessing(n, minimum=minimum, maximum=maximum)
+
+    """
+    da negative operatoren (-, /) vergleichsweise selten sind suche die Lösung
+    mit der höchsten Anzahl von diesen heraus
+    """
 
     def negative_operators(result_: dict):
         therm_str = result_['therm']
@@ -249,7 +234,9 @@ def get_therm(n: int, minimum=0, maximum=9):
             best_diversity = diversity
             best_result = result
 
-    if best_diversity == 0 and n>3:
+    if best_diversity == 0 and n > 3:
+        # wenn es mehr als 3 Operatoren gibt muss mindestens ein negativer Operator
+        # enthalten sein
         return get_therm(n, minimum=minimum, maximum=maximum)
 
     print(f"best operator diversity: {best_diversity}")
@@ -257,15 +244,21 @@ def get_therm(n: int, minimum=0, maximum=9):
     result = best_result['result']
     therm = best_result['therm']
 
+    # mische den Therm noch einmal
     def mix_therm(therm_: str):
         therm_list = therm.split(" + ")
         random.shuffle(therm_list)
         return " + ".join(therm_list)
 
+    # entferne die operatoren
+    def censor_therm(therm_: str):
+        return therm_.replace(" + ", u" ◦ ").replace(" - ", u" ◦ ").replace(" * ", u" ◦ ").replace(" / ", u" ◦ ")
+
     finished_therm = mix_therm(therm)
 
-    return f"{finished_therm} = {int(result)}"
+    return f"{finished_therm} = {int(result)}", f"{censor_therm(finished_therm)} = {int(result)}"
+
 
 if __name__ == "__main__":
     freeze_support()
-    print(get_therm(10))
+    print(get_therm(7))
