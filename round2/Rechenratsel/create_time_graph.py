@@ -45,7 +45,7 @@ with open("times.csv", "r") as time_file:
 
     plt.plot(x, y, "o", linewidth=1, label="data")
     plt.plot(x_, func(x_, *popt), label="Fitted Curve")
-    plt.errorbar(x, y, yerr=standart_deviation, lolims=-abs(standart_deviation), uplims=0, linestyle='None', markersize=0, label=f"Standart Deviation\navr: {round(abs(avr), 2)}; fac: {SCALE_FACTOR}")
+    # plt.errorbar(x, y, yerr=standart_deviation, lolims=-abs(standart_deviation), uplims=0, linestyle='None', markersize=0, label=f"Standart Deviation\navr: {round(abs(avr), 2)}; fac: {SCALE_FACTOR}")
 
     plt.xticks(range(0, max(x)+1))
     
