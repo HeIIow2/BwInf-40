@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 21.12) (preloaded format=pdflatex 2022.1.31)  27 FEB 2022 16:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 21.12) (preloaded format=pdflatex 2022.1.31)  2 MAR 2022 17:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -504,42 +504,55 @@ Package cleveref Info: loaded `ngerman' language definitions on input line 1.
 
  [1
 
-{C:/Users/Lars/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (C:\Users\Lar
-s\AppData\Local\Programs\MiKTeX\tex/latex/ucs\uni-32.def
+{C:/Users/Lars/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+<Laufzeit.png, id=18, 462.528pt x 346.896pt>
+File: Laufzeit.png Graphic file (type png)
+<use Laufzeit.png>
+Package pdftex.def Info: Laufzeit.png  used on input line 123.
+(pdftex.def)             Requested size: 455.24411pt x 341.44843pt.
+
+Overfull \hbox (9.99756pt too wide) in paragraph at lines 123--124
+[][] 
+ []
+
+[2] (C:\Users\Lars\AppData\Local\Programs\MiKTeX\tex/latex/ucs\uni-32.def
 File: uni-32.def 2013/05/13 UCS: Unicode data U+2000..U+20FF
 )
 
 AED: lastpage setting LastPage
-[2] (docuentation.aux
+[3 <./Laufzeit.png>] (docuentation.aux
 Package cleveref Info: loaded `ngerman' language definitions on input line 6.
 ) ) 
 Here is how much of TeX's memory you used:
- 13373 strings out of 478659
- 271598 string characters out of 2846394
+ 13390 strings out of 478659
+ 271817 string characters out of 2846394
  744658 words of memory out of 3000000
- 31341 multiletter control sequences out of 15000+600000
- 417794 words of font info for 64 fonts, out of 8000000 for 9000
+ 31353 multiletter control sequences out of 15000+600000
+ 420092 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 108i,20n,106p,10627b,676s stack positions out of 5000i,500n,10000p,200000b,80000s
- <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
-1000.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600
-\ecrm1200.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/d
-pi600\ecbx1000.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen
-/ec/dpi600\ecsx1200.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfour/jkn
-appen/ec/dpi600\ecrm1000.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfou
-r/jknappen/ec/dpi600\ecsx1000.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/
-ljfour/jknappen/ec/dpi600\ecsx1440.pk> <C:\Users\Lars\AppData\Local\MiKTeX\font
-s/pk/ljfour/jknappen/ec/dpi600\ecrm1728.pk> <C:\Users\Lars\AppData\Local\MiKTeX
-\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx2488.pk><C:/Users/Lars/AppData/Local/Pr
-ograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/Lars/AppData/
-Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/Lars/A
-ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users
-/Lars/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:
-/Users/Lars/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10
-.pfb>
-Output written on docuentation.pdf (2 pages, 141347 bytes).
+ 108i,21n,106p,10627b,676s stack positions out of 5000i,500n,10000p,200000b,80000s
+ <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm
+0800.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600
+\ecrm0600.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/d
+pi600\ecrm0700.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen
+/ec/dpi600\tcrm1000.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfour/jkn
+appen/ec/dpi600\ecrm1200.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/ljfou
+r/jknappen/ec/dpi600\ecbx1000.pk> <C:\Users\Lars\AppData\Local\MiKTeX\fonts/pk/
+ljfour/jknappen/ec/dpi600\ecsx1200.pk> <C:\Users\Lars\AppData\Local\MiKTeX\font
+s/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\Lars\AppData\Local\MiKTeX
+\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx1000.pk> <C:\Users\Lars\AppData\Local\M
+iKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx1440.pk> <C:\Users\Lars\AppData\Lo
+cal\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1728.pk> <C:\Users\Lars\AppDa
+ta\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx2488.pk><C:/Users/Lars/A
+ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/User
+s/Lars/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><
+C:/Users/Lars/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr1
+0.pfb><C:/Users/Lars/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmr7.pfb><C:/Users/Lars/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmsy10.pfb>
+Output written on docuentation.pdf (3 pages, 179749 bytes).
 PDF statistics:
- 319 PDF objects out of 1000 (max. 8388607)
+ 365 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

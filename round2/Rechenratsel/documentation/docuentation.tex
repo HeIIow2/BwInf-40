@@ -104,16 +104,29 @@ Was man auf jeden Fall machen muss ist zu validieren, ob das Rätsel eindeutig i
 
 Wenn man jetzt anstatt Operanden und Operatoren zufällig zu generieren lediglich Operanden zufällig generiert, und dann die Validierung ohne Operanden durchführt, kann man am Ende des Algorythmusses alle Rätsel, deren Ergebniss einzigartig ist herausschreiben. Somit bekommt man eine ganze Liste mit möglichen Rätseln. Dann ist der Letzte Schritt nur noch das "interresanteste" Rätsel herauszufinden, da einige nicht so interesant sind. (z.B. nur multiplikation als Operator)
 
+\section{Laufzeitanalyse}
+
+\subsection{Theoretische Laufzeitanalyse}
+
+Das erste, dass einem bei der Laufzeitanalyse auffällt, ist dass ich in Zeile 212\footnote{Die Zeilen sind ziemlich final könnten sich aber noch ändern.} eine while schleife habe, die läuft, biss es Ergebnise gibt. Dies ist, da es mit einer bestimmten warscheinlichkeit sein kann dass kein Ergebniss kommt, und ich somit die funktion um Ergebnisse aufrufe, bis welche kommen. Dies bedeuted der worst case ist eine Laufzeit von $O(\infty)$, was aber nicht realistisch ist und nie passieren wird.
+
+Der rest des Programmes, also nicht, die eindeutigen Therme zu finden, sondern nur den diversesten auszuwählen. Ist vernachlässigbar.
+
+Bei $n > 9$ wird zwar multithreading verwendet, dies sollte aber nicht die Laufzeit verändern.
+
+Das generieren der Operanden ist auch zu vernachlässigen, dann ist dass einzig wichtige, dass generrieren der Operatoren. Ich rechne jede Kombination aus, und überprüfe die eindeutugkeit. Da es 4 Operatoren bzw. Möglichkeiten gibt und es $n$ "Plätze" gibt, macht dass eine LAufzeit von $O(n) = 4^n$ was eine ziemlich schlechte Exponentielle Laufzeit ist.
+
+\subsection{experimentelle Laufzeitanalyse}
+
+Bestätigen tut dies auch eine experimentelle laufzeitanalyse. Dafür habe ich ein paar mal das programm mit $8 \leq n \leq 15$. Dann habe ich die ergebnisse mit mathplotlib geplottet, die Standartabweichung berechnet, diese geplottet, und eine angeglichene Funktion der Maske $f(n) = f \cdot 4^n$ geplottet.
+
+\includegraphics[width=\textwidth]{Laufzeit.png}
+
+Wie man sieht passt diese angeglichene Funktion ziemlich gut. Der Funktionstherm wäre mit meinen Specs ca. $f(n) = 2.08e-06 \cdot 4^n$
+
+
 \section{Umsetzung}
 Hier wird kurz erläutert, wie die Lösungsidee im Programm tatsächlich umgesetzt wurde. Hier können auch Implementierungsdetails erwähnt werden.
-
-\section{Theoretische Laufzeitanalyse}
-
-Wenn man die Theoretische Laufzeitanalyse durchführt wäre der worst case $O(\infty)$
-
-\subsection{Praktische Laufzeitanalyse}
-
-\subsection{Laufzeitanalyse}
 
 \section{Beispiele}
 Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!
