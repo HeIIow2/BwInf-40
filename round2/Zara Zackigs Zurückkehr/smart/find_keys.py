@@ -42,7 +42,7 @@ class File:
         print("something went wrong")
 
 
-    def check_card(self, index: int, card: list, debug=False) -> bool:
+    def check_card(self, index: int, card: list, debug=False):
         if debug:
             print(f"\nchecking card: {index} -> {card}\n")
 
@@ -54,29 +54,36 @@ class File:
 
         # ekelhafter code :)
         for zeroes, ones in self.number_of_bits[card[0]]:
-            if zeroes < ones:
-                is_valid, indices_ = self.check_bit(zeroes, False, card, current_sorted_bits, debug=debug)
-                if is_valid:
-                    indices.extend(indices_)
-                    is_valid, indices_ = self.check_bit(ones, True, card, current_sorted_bits, debug=debug)
-                    if is_valid:
-                        indices.extend(indices_)
-                        return True, indices
+            if ones > zeroes > 0:
+                new_cards = self.check_bit(zeroes, False, card, current_sorted_bits, debug=debug)
+                is_one = False
+                count = zeroes
+
             else:
-                is_valid, indices_ = self.check_bit(ones, True, card, current_sorted_bits, debug=debug)
-                if is_valid:
-                    indices.extend(indices_)
-                    is_valid, indices_ = self.check_bit(zeroes, False, card, current_sorted_bits, debug=debug)
-                    if is_valid:
-                        indices.extend(indices_)
-                        return True, indices
+                new_cards = self.check_bit(ones, True, card, current_sorted_bits, debug=debug)
+                is_one = True
+                count = ones
+
+            is_key, indices = self.check_with_card(new_cards, count, is_one, current_sorted_bits, debug=debug)
+
+            if is_key:
+                return True, indices
+
 
         return False, []
 
-
-    def check_bit(self, count: int, is_one:bool, card: list, current_bits: list, debug=False) -> bool:
+    def check_with_card(self, next_cards:list, count: int, is_one: bool, current_bits: list, debug=False):
         if not count:
-            return True, []
+            exit(666)
+
+        """
+        next_cards = [
+            [   # turn
+                [], [] # 0/1
+            ]
+        ]
+        """
+
 
         indices_pool = current_bits[is_one]
         if debug:
@@ -85,6 +92,92 @@ class File:
         n = len(indices_pool)
         if count > n:
             return False, []
+        indices = list(range(count))
+
+        def next_indice(indices_: list, i: int):
+            indices_[i] += 1
+
+            is_possible = True
+            if indices_[i] >= n - (count - i - 1):
+                if not i:
+                    return False, indices_, indices_[i]
+                is_possible, indices_, last_val = next_indice(indices_, i - 1)
+                indices_[i] = last_val + 1
+
+            return is_possible, indices_, indices_[i]
+
+        while True:
+            # print(indices)
+            cards_indices = []
+            cards = []
+            for index in indices:
+                cards_indices.append(indices_pool[index])
+                cards.append(self.cards[cards_indices[-1]])
+
+            def compare_cards(cards_: list, start_at=1):
+                nonlocal cards_indices
+                nonlocal next_cards
+
+
+                addet = 0
+                for card_elem in cards_:
+                    addet += card_elem[start_at]
+                xored = addet % 2
+                candidates = next_cards[xored]
+
+                for j in range(start_at+1, self.length):
+                    new_candidates = []
+
+                    addet = 0
+                    for card_elem in cards_:
+                        addet += card_elem[j]
+                    xored = addet%2
+
+                    for candidate in candidates:
+                        if candidate in next_cards[xored]:
+                            new_candidates.append(candidate)
+
+                    if not len(new_candidates):
+                        candidates = copy.copy(new_candidates)
+                    else:
+                        return False, []
+
+                return True, candidates
+
+            is_valid, candidates = compare_cards(cards)
+
+            if is_valid:
+                return True, cards_indices.extend(candidates)
+
+            possible, indices, p = next_indice(indices, len(indices) - 1)
+            if not possible:
+                break
+
+        return False, []
+
+    def check_bit(self, count: int, is_one:bool, card: list, current_bits: list, debug=False):
+        if not count:
+            exit(666)
+
+        """
+        next_cards = [
+            [   # turn
+                [], [] # 0/1
+            ]
+        ]
+        """
+
+        next_cards = []
+        for i in range(self.length):
+            next_cards.append([[], []])
+
+        indices_pool = current_bits[is_one]
+        if debug:
+            print(f"checking bit with count {count} and pool {indices_pool}")
+
+        n = len(indices_pool)
+        if count > n:
+            return []
         indices = list(range(count))
 
         def next_indice(indices_ :list, i:int):
@@ -107,26 +200,31 @@ class File:
                 cards_indices.append(indices_pool[index])
                 cards.append(self.cards[cards_indices[-1]])
 
-            def compare_cards(card_:list, cards_:list, start_at=1) -> bool:
+            def compare_cards(card_:list, cards_:list, start_at=1):
+                nonlocal cards_indices
+                nonlocal next_cards
+
                 for j in range(start_at, self.length):
                     addet = 0
                     for card_elem in cards_:
                         addet += card_elem[j]
 
-                    if bool(addet%2) != card_[j]:
-                        return False
+                    next_cards[j][addet%2].append(list(cards_indices))
+
+                    # if xored != card_[j]:
+                    #     return False
                 
-                return True
+                # return True
 
 
             if compare_cards(card, cards):
-                return True, cards_indices
+                return cards_indices
             
             possible, indices, p = next_indice(indices, len(indices)-1)
             if not possible:
                 break
 
-        return False, []
+        return []
 
 
 
@@ -146,4 +244,4 @@ def read_file(number: int) -> File:
 
     return File(n,k,card_len,cards)
 
-file = read_file(1)
+file = read_file(0)
