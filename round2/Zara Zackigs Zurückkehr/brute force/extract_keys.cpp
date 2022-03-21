@@ -57,7 +57,7 @@ int main()
    int card_len;
 
    // einlesen des Files
-   ifstream data_file ("examples/stapel2.txt");
+   ifstream data_file ("examples/stapel1.txt");
    string data_str;
    if (data_file.is_open()) 
    {

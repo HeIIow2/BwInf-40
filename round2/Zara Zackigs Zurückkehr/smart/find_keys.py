@@ -1,8 +1,51 @@
 import copy
 
 
+class Combinations:
+    def __init__(self, n: int, k: int):
+        self.n = n
+        self.k = k
+
+    def __iter__(self):
+        self.indices = list(range(self.k))
+
+        self.maximums = []
+        for i in range(self.k):
+            self.maximums.append(self.n-self.k+i)
+
+        return self
+
+    def next_indice(self, i: int):
+        self.indices[i] += 1
+
+        is_possible = True
+        if self.indices[i] >= self.maximums[i]:
+            if not i:
+                return False, self.indices, self.indices[i]
+
+            # call self
+            is_possible, indices_, last_val = self.next_indice(i - 1)
+
+            self.indices[i] = last_val + 1
+
+        return is_possible, self.indices, self.indices[i]
+
+    def __next__(self):
+        possible, indices, p = self.next_indice(self.k-1)
+        if not possible:
+            raise StopIteration
+
+        return indices
+
+
+def xor_at(to_xor: list, xor_at: int):
+    xored = to_xor[0][xor_at]
+    for element in to_xor[1:]:
+        xored = xored ^ element[xor_at]
+    return xored
+
 class File:
-    def __init__(self, n: int, k:int, length: int, cards: str) -> None:
+    def __init__(self, n: int, k: int, length: int, cards: list) -> None:
         self.n = n
         self.k = k
         self.length = length
@@ -12,7 +55,7 @@ class File:
 
         # einteilen der binary in listen
         self.sorted_by_bits = [
-            [], # 0
+            [],  # 0
             []  # 1
         ]
 
@@ -22,25 +65,34 @@ class File:
         print(f"sortet by bits: {self.sorted_by_bits}")
 
         self.number_of_bits = [
-            [],     # 0
-            []      # 1
+            [],  # 0
+            []  # 1
         ]
 
-        for i in range(0,self.k+1):
+        for i in range(0, self.k + 1):
             # i ist die nummer an 1en
-            self.number_of_bits[i%2].append((self.k-i, i))
+            self.number_of_bits[i % 2].append((self.k - i, i))
 
-        print("number of zeroes: ",self.number_of_bits[0])
-        print("number of ones: ",self.number_of_bits[1])
+        print("number of zeroes: ", self.number_of_bits[0])
+        print("number of ones: ", self.number_of_bits[1])
 
         for i, card in enumerate(self.cards):
             is_key, self.key_indices = self.check_card(i, card, debug=True)
             if is_key:
                 print("found")
                 print(self.key_indices)
+                for i in self.key_indices:
+                    string = ""
+                    card = self.cards[i]
+                    for bit in card:
+                        if bit:
+                            string += "1 "
+                        else:
+                            string += "0 "
+
+                    print(string)
                 return
         print("something went wrong")
-
 
     def check_card(self, index: int, card: list, debug=False):
         if debug:
@@ -48,65 +100,39 @@ class File:
 
         current_sorted_bits = copy.deepcopy(self.sorted_by_bits)
         current_sorted_bits[card[0]].remove(index)
-        print(self.sorted_by_bits)
+        print(current_sorted_bits)
 
-        indices = [index]
-
-        # ekelhafter code :)
         for zeroes, ones in self.number_of_bits[card[0]]:
-            if ones > zeroes > 0:
-                new_cards = self.check_bit(zeroes, False, card, current_sorted_bits, debug=debug)
-                is_one = False
-                count = zeroes
-
-            else:
-                new_cards = self.check_bit(ones, True, card, current_sorted_bits, debug=debug)
+            if ones > zeroes:
+                new_cards = self.check_bit(zeroes, current_sorted_bits[False], debug=debug)
                 is_one = True
                 count = ones
 
-            is_key, indices = self.check_with_card(new_cards, count, is_one, current_sorted_bits, debug=debug)
+            else:
+                new_cards = self.check_bit(ones, current_sorted_bits[True], debug=debug)
+                is_one = False
+                count = zeroes
+
+            is_key, indices = self.check_with_card(new_cards, count, current_sorted_bits[is_one], debug=debug)
 
             if is_key:
                 return True, indices
 
-
         return False, []
 
-    def check_with_card(self, next_cards:list, count: int, is_one: bool, current_bits: list, debug=False):
+    def check_with_card(self, next_cards: list, count: int, indices_pool: list, debug=False):
         if not count:
             exit(666)
 
-        """
-        next_cards = [
-            [   # turn
-                [], [] # 0/1
-            ]
-        ]
-        """
-
-
-        indices_pool = current_bits[is_one]
         if debug:
             print(f"checking bit with count {count} and pool {indices_pool}")
 
         n = len(indices_pool)
         if count > n:
             return False, []
-        indices = list(range(count))
 
-        def next_indice(indices_: list, i: int):
-            indices_[i] += 1
-
-            is_possible = True
-            if indices_[i] >= n - (count - i - 1):
-                if not i:
-                    return False, indices_, indices_[i]
-                is_possible, indices_, last_val = next_indice(indices_, i - 1)
-                indices_[i] = last_val + 1
-
-            return is_possible, indices_, indices_[i]
-
-        while True:
+        combinations = iter(Combinations(len(indices_pool), count))
+        for indices in combinations:
             # print(indices)
             cards_indices = []
             cards = []
@@ -115,30 +141,17 @@ class File:
                 cards.append(self.cards[cards_indices[-1]])
 
             def compare_cards(cards_: list, start_at=1):
-                nonlocal cards_indices
-                nonlocal next_cards
+                candidates = next_cards[start_at][xor_at(cards_, start_at)]
 
-
-                addet = 0
-                for card_elem in cards_:
-                    addet += card_elem[start_at]
-                xored = addet % 2
-                candidates = next_cards[xored]
-
-                for j in range(start_at+1, self.length):
+                for j in range(start_at + 1, self.length):
                     new_candidates = []
 
-                    addet = 0
-                    for card_elem in cards_:
-                        addet += card_elem[j]
-                    xored = addet%2
-
                     for candidate in candidates:
-                        if candidate in next_cards[xored]:
+                        if candidate in next_cards[j][xor_at(cards_, j)]:
                             new_candidates.append(candidate)
 
-                    if not len(new_candidates):
-                        candidates = copy.copy(new_candidates)
+                    if len(new_candidates):
+                        candidates = list(new_candidates)
                     else:
                         return False, []
 
@@ -147,85 +160,43 @@ class File:
             is_valid, candidates = compare_cards(cards)
 
             if is_valid:
-                return True, cards_indices.extend(candidates)
-
-            possible, indices, p = next_indice(indices, len(indices) - 1)
-            if not possible:
-                break
+                cards_indices.extend(candidates)
+                return True, cards_indices
 
         return False, []
 
-    def check_bit(self, count: int, is_one:bool, card: list, current_bits: list, debug=False):
-        if not count:
-            exit(666)
+    def check_bit(self, count: int, indices_pool: list, debug=False):
+        n = len(indices_pool)
 
-        """
-        next_cards = [
-            [   # turn
-                [], [] # 0/1
-            ]
-        ]
-        """
+        if debug:
+            print(f"checking bit with count {count} and pool {indices_pool}")
 
         next_cards = []
         for i in range(self.length):
             next_cards.append([[], []])
 
-        indices_pool = current_bits[is_one]
-        if debug:
-            print(f"checking bit with count {count} and pool {indices_pool}")
+        if not count:
+            for j, card in enumerate(self.cards):
+                for i in range(self.length):
+                    next_cards[i][card[i]].append(j)
 
-        n = len(indices_pool)
+            return next_cards
+
         if count > n:
-            return []
-        indices = list(range(count))
+            return next_cards
 
-        def next_indice(indices_ :list, i:int):
-            indices_[i] += 1
-
-            is_possible = True
-            if indices_[i] >= n-(count-i-1):
-                if not i:
-                    return False, indices_, indices_[i]
-                is_possible, indices_, last_val = next_indice(indices_, i-1)
-                indices_[i] = last_val+1
-
-            return is_possible, indices_, indices_[i]
-
-        while True:
-            # print(indices)
+        combinations = iter(Combinations(n, count))
+        for indices in combinations:
             cards_indices = []
             cards = []
             for index in indices:
                 cards_indices.append(indices_pool[index])
                 cards.append(self.cards[cards_indices[-1]])
 
-            def compare_cards(card_:list, cards_:list, start_at=1):
-                nonlocal cards_indices
-                nonlocal next_cards
+            for j in range(0, self.length):
+                next_cards[j][xor_at(cards, j)].append(list(cards_indices))
 
-                for j in range(start_at, self.length):
-                    addet = 0
-                    for card_elem in cards_:
-                        addet += card_elem[j]
-
-                    next_cards[j][addet%2].append(list(cards_indices))
-
-                    # if xored != card_[j]:
-                    #     return False
-                
-                # return True
-
-
-            if compare_cards(card, cards):
-                return cards_indices
-            
-            possible, indices, p = next_indice(indices, len(indices)-1)
-            if not possible:
-                break
-
-        return []
-
+        return next_cards
 
 
 def read_file(number: int) -> File:
@@ -242,6 +213,13 @@ def read_file(number: int) -> File:
         k = int(k)
         card_len = int(card_len)
 
-    return File(n,k,card_len,cards)
+    return File(n, k, card_len, cards)
+
 
 file = read_file(0)
+
+"""
+combinations = iter(Combinations(20, 3))
+for i in combinations:
+    print(i)
+"""
