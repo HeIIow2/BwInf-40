@@ -1,5 +1,7 @@
+import logging
 import copy
 
+logging.basicConfig(level=logging.DEBUG)
 
 SOLUTIONS = 1, 2, 4, 6, 7, 9, 11, 14, 16
 
@@ -54,7 +56,7 @@ class File:
         self.length = length
         self.cards = cards
 
-        print(f"n: {self.n}; k: {self.k}")
+        logging.info(f" n: {self.n}; k: {self.k}")
 
         # einteilen der binary in listen
         self.sorted_by_bits = [
