@@ -1,5 +1,7 @@
+import logging
 import copy
 
+logging.basicConfig(level=logging.DEBUG)
 
 class Combinations:
     def __init__(self, n: int, k: int):
@@ -51,7 +53,7 @@ class File:
         self.length = length
         self.cards = cards
 
-        print(f"n: {self.n}; k: {self.k}")
+        logging.info(f" n: {self.n}; k: {self.k}")
 
         # einteilen der binary in listen
         self.sorted_by_bits = [
