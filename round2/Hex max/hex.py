@@ -4,7 +4,9 @@ import enum
 from dataclasses import dataclass
 import numpy as np
 
-EXAMPLE = 0
+logging.basicConfig(level=logging.INFO)
+
+EXAMPLE = 5
 hex_number = []
 MOVES = 0
 FREE_ADDS = 0
@@ -12,7 +14,51 @@ FREE_REMOVES = 0
 # [zahl vorher][zahl nacher][add remove]
 change_hex = {}
 
-logging.basicConfig(level=logging.DEBUG)
+history = []
+@dataclass
+class Step:
+    hex_number: list
+    moves_left: int
+    free_adds: int
+    free_removes: int
+    last_move: int = 0
+    possible_moves = None
+
+    def skip_to_next_move(self):
+        self.last_move += 1
+        if self.possible_moves[self.last_move].digit == -1:
+            return False
+        return True
+
+    def next_move(self):
+        hex_number_ = self.hex_number.copy()
+        if self.possible_moves is None:
+            self.possible_moves = np.sort(np.array([hex_digit.best_move(self.moves_left) for hex_digit in self.hex_number]))[::-1]
+        best_move = self.possible_moves[self.last_move]
+        if best_move.digit == -1:
+            return None
+        moves_left = self.moves_left
+        free_adds = self.free_adds
+        free_removes = self.free_removes
+
+        moves_left -= best_move.moves
+        free_adds -= best_move.add
+        free_removes -= best_move.remove
+
+        if free_adds < 0:
+            free_removes = abs(free_adds)
+            free_adds = 0
+        if free_removes < 0:
+            free_adds = abs(free_removes)
+            free_removes = 0
+
+        self.last_move += 1
+
+        hex_number_[best_move.digit].execute_move(best_move)
+        logging.debug(f"executing {best_move} at {hex_number_[best_move.digit]}")
+
+        return Step(hex_number_, moves_left, free_adds, free_removes)
+
 
 SEGMENTS = 7
 
@@ -124,24 +170,18 @@ for hex_1, hex_matrix_1 in enumerate(hex_matrix):
 
 timeout = MOVES
 iteration = 0
-while MOVES > 0:
-    best_moves = np.array([hex_digit.best_move(MOVES) for hex_digit in hex_number])
-    best_index = np.argmax(best_moves)
-    best_move = best_moves[best_index]
-
-    MOVES -= best_move.moves
-    FREE_ADDS -= best_move.add
-    FREE_REMOVES -= best_move.remove
-
-    if FREE_ADDS < 0:
-        FREE_REMOVES = abs(FREE_ADDS)
-        FREE_ADDS = 0
-    if FREE_REMOVES < 0:
-        FREE_ADDS = abs(FREE_REMOVES)
-        FREE_REMOVES = 0
-
-    hex_number[best_index].execute_move(best_move)
-    logging.debug(f"executing {best_move} at {hex_number[best_index]}")
+history.append(Step(hex_number, MOVES, FREE_ADDS, FREE_REMOVES))
+while history[-1].moves_left > 0:
+    new_move = history[-1].next_move()
+    if new_move is None:
+        while True:
+            if history[-1].skip_to_next_move():
+                break
+            else:
+                history.pop()
+                timeout -= 1
+        continue
+    history.append(new_move)
 
     iteration += 1
     if iteration > timeout:
