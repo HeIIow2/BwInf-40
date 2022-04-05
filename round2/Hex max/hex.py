@@ -1,5 +1,6 @@
-from turtle import *
+# from turtle import *
 
+from PIL import Image
 import json
 import logging
 import enum
@@ -278,8 +279,6 @@ def main(hex_number: list, MOVES: int):
     return number
 
 def execute_file(EXAMPLE: int = 0):
-    speed(0)
-
     # read example file
     hex_number = []
     MOVES = 0
@@ -293,10 +292,17 @@ def execute_file(EXAMPLE: int = 0):
 
     sollution = main(hex_number, MOVES)
 
+    length = 20
+    gap = 10
+    thickness = 1
+    digits = len(hex_number)
+    # create pillow image
+    img = Image.new('RGB', ((length + gap) * digits + gap, (length + length + gap) * (MOVES+1) + gap), color='white')
+
     start_hex = [hex_matrix[int(i, 16)].copy() for i in hex_str]
     end_hex = [hex_matrix[int(i, 16)].copy() for i in sollution]
-    ht()
-    draw_digits(start_hex, 0, MOVES+1)
+
+    img = draw_digits(img,start_hex, 0, MOVES+1, length=length, gap=gap, thickness=thickness)
     for i in range(MOVES):
         add = False
         remove = False
@@ -319,65 +325,28 @@ def execute_file(EXAMPLE: int = 0):
             if to_break:
                 break
 
-        draw_digits(start_hex, i+1, MOVES+1)
+        img = draw_digits(img, start_hex, i+1, MOVES+1, length=length, gap=gap, thickness=thickness)
 
-    while True:
-        left(1)
+    img.save(f'examples/hexmax{EXAMPLE}.png')
 
 
-def draw_digits(hex_number: list, move: int, total_moves:int):
-    length = 5
-    gap = 3
-    total_height = int((total_moves * (length + length + gap) + gap)/2)
-    height = total_height - (move * (length + length + gap) + gap)
+def draw_digits(img, hex_number: list, move: int, total_moves:int, length: int = 10, gap: int = 5, thickness: int = 2):
+    height = move * (gap+length+length) + gap
     digits = len(hex_number)
     
-    right(90)
-    first_pos = int(-((digits * (length + gap) + gap) / 2))
+    
+    first_pos = gap
     for i, digit in enumerate(hex_number):
-        #digit = hex_matrix[int(digit, 16)]
-        penup()
-        start_pos = first_pos + (i * (length + gap))
-        goto(start_pos, height)
-     
-        pendown()
+        if digit[0]:    img.paste(Image.new('RGB', (length, thickness), color='black'), (first_pos + i * (length + gap), height))   
+        if digit[1]:    img.paste(Image.new('RGB', (length, thickness), color='black'), (first_pos + i * (length + gap), height+length))
+        if digit[2]:    img.paste(Image.new('RGB', (length, thickness), color='black'), (first_pos + i * (length + gap), height+length*2))  
+        if digit[3]:    img.paste(Image.new('RGB', (thickness, length), color='black'), (first_pos + i * (length + gap), height))  
+        if digit[4]:    img.paste(Image.new('RGB', (thickness, length), color='black'), (first_pos + i * (length + gap) + length, height))   
+        if digit[5]:    img.paste(Image.new('RGB', (thickness, length), color='black'), (first_pos + i * (length + gap), height+length)) 
+        if digit[6]:    img.paste(Image.new('RGB', (thickness, length), color='black'), (first_pos + i * (length + gap) + length, height+length))   
 
-        #5
-        if digit[5]: pd()
-        else: pu()
-        forward(length)
-        left(90)
-        #2
-        if digit[2]: pd()
-        else: pu()
-        forward(length)
-        left(90)
-        #6
-        if digit[6]: pd()
-        else: pu()
-        forward(length)
-        #4
-        if digit[4]: pd()
-        else: pu()
-        forward(length)
-        left(90)
-        #0
-        if digit[0]: pd()
-        else: pu()
-        forward(length)
-        left(90)
-        #3
-        if digit[3]: pd()
-        else: pu()
-        forward(length)
-        left(90)
-        #1
-        if digit[1]: pd()
-        else: pu()
-        forward(length)
-        right(90)
-
-    left(90)
+    return img   
 
 if __name__ == "__main__":
-    execute_file(2)
+    for i in range(6):
+        execute_file(i)
