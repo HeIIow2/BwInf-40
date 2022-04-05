@@ -1,3 +1,5 @@
+from turtle import *
+
 import json
 import logging
 import enum
@@ -57,6 +59,8 @@ class Move:
 
     def __lt__(self, other):
         if self.digit == other.digit:
+            if self.score == other.score:
+                return self.free_adds + self.free_removes > other.free_adds + other.free_removes
             return self.score < other.score
         if not self.score:
             return True
@@ -81,17 +85,21 @@ class HexDigit:
         remove = change_hex[self.value][i][Hex.remove]
 
         # substrahiere die kostenlose zuege von den gebrauchten
-        if free_adds:
+        if free_adds > 0:
             add -= free_adds
             if add < 0:
                 free_adds = abs(add)
                 add = 0
+            else:
+                free_adds = 0
 
-        if free_removes:
+        if free_removes > 0:
             remove -= free_removes
             if remove < 0:
                 free_removes = abs(remove)
                 remove = 0
+            else:
+                free_removes = 0
 
         moves = max(add, remove)
 
@@ -124,6 +132,21 @@ class HexDigit:
     def get_moves(self, moves_left: int, free_adds: int, free_removes: int):
         return_moves = []
         for i in range(self.value + 1, self.base):
+        # for i in range(0, self.base):
+            if i == self.value:
+                continue
+            temp_res = self.get_move(i, moves_left, free_adds, free_removes)
+            if temp_res is not None:
+                return_moves.append(temp_res)
+
+        return np.array(return_moves)
+
+    def get_worse_moves(self, moves_left: int, free_adds: int, free_removes: int):
+        return_moves = []
+        # for i in range(self.value + 1, self.base):
+        for i in range(0, self.value):
+            if i == self.value:
+                continue
             temp_res = self.get_move(i, moves_left, free_adds, free_removes)
             if temp_res is not None:
                 return_moves.append(temp_res)
@@ -142,6 +165,7 @@ class Step:
     free_removes: int
     last_move: int = 0
     possible_moves = None
+    is_worse = False
 
     def __str__(self):
         return f"{self.print_num()} (moves: {self.moves_left}, adds: {self.free_adds}, removes: {self.free_removes})"
@@ -164,16 +188,30 @@ class Step:
         if self.possible_moves is None:
             flattened_array = np.hstack(
                 [hex_digit.get_moves(self.moves_left, self.free_adds, self.free_removes) for hex_digit in
-                 self.hex_number])
+                 hex_number_])
             self.possible_moves = np.sort(flattened_array)[::-1]
 
         if self.last_move >= len(self.possible_moves):
-            return None
+            if self.is_worse:
+                return None
+
+            self.last_move = 0
+            flattened_array = np.hstack(
+                [hex_digit.get_worse_moves(self.moves_left, self.free_adds, self.free_removes) for hex_digit in
+                 hex_number_])
+            self.possible_moves = np.sort(flattened_array)[::-1]
+            self.is_worse = True
+
+            if self.last_move >= len(self.possible_moves):
+                return None
+
 
         best_move = self.possible_moves[self.last_move]
-        self.last_move += 1
 
         hex_number_[best_move.digit].execute_move(best_move)
+        self.last_move += 1
+        
+        logging.basicConfig(level=logging.DEBUG)
         logging.debug(f"executing {best_move} at {hex_number_[best_move.digit]}")
 
         return Step(hex_number_, best_move.moves_left, best_move.free_adds, best_move.free_removes)
@@ -182,18 +220,8 @@ class Step:
         return "".join([f"{hex_digit.value:x}" for hex_digit in reversed(self.hex_number)])
 
 
-def main(EXAMPLE: int = 0):
-    # read example file
-    hex_number = []
-    MOVES = 0
-    with open(f'examples/hexmax{EXAMPLE}.txt') as f:
-        hex_str, moves = f.read().splitlines()
-        MOVES = int(moves)
-        logging.info(f'Moves: {MOVES}')
-        logging.info(f'Hex: {hex_str}')
-        for i, digit in enumerate(reversed(hex_str)):
-            hex_number.append(HexDigit(digit, i))
-
+def main(hex_number: list, MOVES: int):
+    
     FREE_ADDS = 0
     FREE_REMOVES = 0
     history = [Step(hex_number, MOVES, FREE_ADDS, FREE_REMOVES)]
@@ -204,17 +232,16 @@ def main(EXAMPLE: int = 0):
     timeout = MOVES
     iteration = 0
     while history[-1].moves_left > 0 or history[-1].free_removes > 0 or history[-1].free_adds > 0:
-        iteration += 1
         new_move = history[-1].next_move()
-        iteration += 1
-        while new_move is None:
-            history.pop()
+
+        if new_move is None:
+            history.pop(-1)
             iteration -= 1
 
             if not len(history):
                 break
 
-            new_move = history[-1].next_move()
+            continue
 
             # wenn es keine neue mögliche Zuege gibt, dann
             # breche ab und nehme das bisher beste ergebnis
@@ -225,7 +252,7 @@ def main(EXAMPLE: int = 0):
         logging.info(new_move)
         history.append(new_move)
 
-        iteration += 1
+        #iteration += 1
         if iteration > timeout:
             logging.error("timeout")
             break
@@ -239,13 +266,118 @@ def main(EXAMPLE: int = 0):
     FREE_ADDS = biggest_history[-1].free_adds
     FREE_REMOVES = biggest_history[-1].free_removes
 
-    logging.info(f"Moves: {MOVES}")
-    logging.info(f"Free adds: {FREE_ADDS}")
-    logging.info(f"Free removes: {FREE_REMOVES}")
+    for step in history:
+        print(step)
+
+    print(f"Moves: {MOVES}")
+    print(f"Free adds: {FREE_ADDS}")
+    print(f"Free removes: {FREE_REMOVES}")
 
     number = biggest_history[-1].print_num()
-    logging.info(f"biggest Number: 0x{number}")
+    print(f"biggest Number: 0x{number}")
+    return number
 
+def execute_file(EXAMPLE: int = 0):
+    speed(0)
+
+    # read example file
+    hex_number = []
+    MOVES = 0
+    with open(f'examples/hexmax{EXAMPLE}.txt') as f:
+        hex_str, moves = f.read().splitlines()
+        MOVES = int(moves)
+        logging.info(f'Moves: {MOVES}')
+        logging.info(f'Hex: {hex_str}')
+        for i, digit in enumerate(reversed(hex_str)):
+            hex_number.append(HexDigit(digit, i))
+
+    sollution = main(hex_number, MOVES)
+
+    start_hex = [hex_matrix[int(i, 16)].copy() for i in hex_str]
+    end_hex = [hex_matrix[int(i, 16)].copy() for i in sollution]
+    ht()
+    draw_digits(start_hex, 0, MOVES+1)
+    for i in range(MOVES):
+        add = False
+        remove = False
+        to_break = False
+        for j, (digit1, digit2) in enumerate(zip(start_hex, end_hex)):
+            for k, (bit1, bit2) in enumerate(zip(digit1, digit2)):
+                if bit1 and (not bit2) and not add:
+                    add = True
+                    start_hex[j][k] = bit2
+                    if remove:
+                        to_break = True
+                        break
+                elif (not bit1) and bit2 and not remove:
+                    remove = True
+                    start_hex[j][k] = bit2
+                    if add:
+                        to_break = True
+                        break
+
+            if to_break:
+                break
+
+        draw_digits(start_hex, i+1, MOVES+1)
+
+    while True:
+        left(1)
+
+
+def draw_digits(hex_number: list, move: int, total_moves:int):
+    length = 5
+    gap = 3
+    total_height = int((total_moves * (length + length + gap) + gap)/2)
+    height = total_height - (move * (length + length + gap) + gap)
+    digits = len(hex_number)
+    
+    right(90)
+    first_pos = int(-((digits * (length + gap) + gap) / 2))
+    for i, digit in enumerate(hex_number):
+        #digit = hex_matrix[int(digit, 16)]
+        penup()
+        start_pos = first_pos + (i * (length + gap))
+        goto(start_pos, height)
+     
+        pendown()
+
+        #5
+        if digit[5]: pd()
+        else: pu()
+        forward(length)
+        left(90)
+        #2
+        if digit[2]: pd()
+        else: pu()
+        forward(length)
+        left(90)
+        #6
+        if digit[6]: pd()
+        else: pu()
+        forward(length)
+        #4
+        if digit[4]: pd()
+        else: pu()
+        forward(length)
+        left(90)
+        #0
+        if digit[0]: pd()
+        else: pu()
+        forward(length)
+        left(90)
+        #3
+        if digit[3]: pd()
+        else: pu()
+        forward(length)
+        left(90)
+        #1
+        if digit[1]: pd()
+        else: pu()
+        forward(length)
+        right(90)
+
+    left(90)
 
 if __name__ == "__main__":
-    main(1)
+    execute_file(2)
