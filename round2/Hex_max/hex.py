@@ -190,7 +190,7 @@ class Step:
         # print(self.moves_left, self.free_adds, self.free_removes)
         hex_number_ = copy.deepcopy(self.hex_number)
 
-        const = 500
+        const = 520
 
         lower_bound = const
         if prev_move < const:
@@ -199,7 +199,7 @@ class Step:
         if self.possible_moves is None:
             flattened_array = np.hstack(
                 [hex_digit.get_moves(self.moves_left, self.free_adds, self.free_removes) for hex_digit in
-                 hex_number_[prev_move-lower_bound:]])
+                 hex_number_[prev_move - lower_bound:]])
             self.possible_moves = np.sort(flattened_array)[::-1]
 
         if self.last_move >= len(self.possible_moves):
@@ -216,13 +216,12 @@ class Step:
             if self.last_move >= len(self.possible_moves):
                 return None
 
-
         best_move = self.possible_moves[self.last_move]
         prev_move = best_move.digit
 
         hex_number_[best_move.digit].execute_move(best_move)
         self.last_move += 1
-        
+
         logging.basicConfig(level=logging.DEBUG)
         logging.debug(f"executing {best_move} at {hex_number_[best_move.digit]}")
 
@@ -233,7 +232,6 @@ class Step:
 
 
 def main(hex_number: list, MOVES: int):
-    
     FREE_ADDS = 0
     FREE_REMOVES = 0
     history = [Step(hex_number, MOVES, FREE_ADDS, FREE_REMOVES)]
@@ -243,12 +241,12 @@ def main(hex_number: list, MOVES: int):
     # just a timeout that I dont get stuck in an infinite loop
     timeout = MOVES
     iteration = 0
-    
+
     thing = 0
     prev_move = len(hex_number) - 1
     while history[-1].moves_left > 0 or history[-1].free_removes > 0 or history[-1].free_adds > 0:
         new_move = history[-1].next_move(prev_move)
-        
+
         prev_move = new_move.prev_move
         print(len(history), prev_move)
 
@@ -256,6 +254,7 @@ def main(hex_number: list, MOVES: int):
             print("is none")
             history.pop(-1)
             iteration -= 1
+            prev_move = len(hex_number) - 1
 
             if not len(history):
                 break
@@ -271,7 +270,7 @@ def main(hex_number: list, MOVES: int):
         logging.info(new_move)
         history.append(new_move)
 
-        #iteration += 1
+        # iteration += 1
         if iteration > timeout:
             logging.error("timeout")
             break
@@ -296,6 +295,7 @@ def main(hex_number: list, MOVES: int):
     print(f"biggest Number: 0x{number}")
     return number
 
+
 def execute_file(EXAMPLE: int = 0):
     # read example file
     hex_number = []
@@ -317,12 +317,12 @@ def execute_file(EXAMPLE: int = 0):
     thickness = 1
     digits = len(hex_number)
     # create pillow image
-    img = Image.new('RGB', ((length + gap) * digits + gap, (length + length + gap) * (MOVES+1) + gap), color='white')
+    img = Image.new('RGB', ((length + gap) * digits + gap, (length + length + gap) * (MOVES + 1) + gap), color='white')
 
     start_hex = [hex_matrix[int(i, 16)].copy() for i in hex_str]
     end_hex = [hex_matrix[int(i, 16)].copy() for i in sollution]
 
-    img = draw_digits(img,start_hex, 0, MOVES+1, length=length, gap=gap, thickness=thickness)
+    img = draw_digits(img, start_hex, 0, MOVES + 1, length=length, gap=gap, thickness=thickness)
     for i in range(MOVES):
         add = False
         remove = False
@@ -345,27 +345,34 @@ def execute_file(EXAMPLE: int = 0):
             if to_break:
                 break
 
-        img = draw_digits(img, start_hex, i+1, MOVES+1, length=length, gap=gap, thickness=thickness)
+        img = draw_digits(img, start_hex, i + 1, MOVES + 1, length=length, gap=gap, thickness=thickness)
 
     img.save(f'examples/hexmax{EXAMPLE}.png')
 
 
-def draw_digits(img, hex_number: list, move: int, total_moves:int, length: int = 10, gap: int = 5, thickness: int = 2):
-    height = move * (gap+length+length) + gap
+def draw_digits(img, hex_number: list, move: int, total_moves: int, length: int = 10, gap: int = 5, thickness: int = 2):
+    height = move * (gap + length + length) + gap
     digits = len(hex_number)
-    
-    
+
     first_pos = gap
     for i, digit in enumerate(hex_number):
-        if digit[0]:    img.paste(Image.new('RGB', (length, thickness), color='black'), (first_pos + i * (length + gap), height))   
-        if digit[1]:    img.paste(Image.new('RGB', (length, thickness), color='black'), (first_pos + i * (length + gap), height+length))
-        if digit[2]:    img.paste(Image.new('RGB', (length, thickness), color='black'), (first_pos + i * (length + gap), height+length*2))  
-        if digit[3]:    img.paste(Image.new('RGB', (thickness, length), color='black'), (first_pos + i * (length + gap), height))  
-        if digit[4]:    img.paste(Image.new('RGB', (thickness, length), color='black'), (first_pos + i * (length + gap) + length, height))   
-        if digit[5]:    img.paste(Image.new('RGB', (thickness, length), color='black'), (first_pos + i * (length + gap), height+length)) 
-        if digit[6]:    img.paste(Image.new('RGB', (thickness, length), color='black'), (first_pos + i * (length + gap) + length, height+length))   
+        if digit[0]:    img.paste(Image.new('RGB', (length, thickness), color='black'),
+                                  (first_pos + i * (length + gap), height))
+        if digit[1]:    img.paste(Image.new('RGB', (length, thickness), color='black'),
+                                  (first_pos + i * (length + gap), height + length))
+        if digit[2]:    img.paste(Image.new('RGB', (length, thickness), color='black'),
+                                  (first_pos + i * (length + gap), height + length * 2))
+        if digit[3]:    img.paste(Image.new('RGB', (thickness, length), color='black'),
+                                  (first_pos + i * (length + gap), height))
+        if digit[4]:    img.paste(Image.new('RGB', (thickness, length), color='black'),
+                                  (first_pos + i * (length + gap) + length, height))
+        if digit[5]:    img.paste(Image.new('RGB', (thickness, length), color='black'),
+                                  (first_pos + i * (length + gap), height + length))
+        if digit[6]:    img.paste(Image.new('RGB', (thickness, length), color='black'),
+                                  (first_pos + i * (length + gap) + length, height + length))
 
-    return img   
+    return img
+
 
 if __name__ == "__main__":
     execute_file(5)
