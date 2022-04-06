@@ -131,9 +131,11 @@ class HexDigit:
         return moves[level]
 
     def get_moves(self, moves_left: int, free_adds: int, free_removes: int):
+        if self.value == 15:
+            return np.array([])
+
         return_moves = []
         for i in range(self.value + 1, self.base):
-        # for i in range(0, self.base):
             if i == self.value:
                 continue
             temp_res = self.get_move(i, moves_left, free_adds, free_removes)
@@ -164,6 +166,7 @@ class Step:
     moves_left: int
     free_adds: int
     free_removes: int
+    prev_move: int = 0
     last_move: int = 0
     possible_moves = None
     is_worse = False
@@ -183,13 +186,20 @@ class Step:
             if digit1.value != digit2.value:
                 return digit1.value < digit2.value
 
-    def next_move(self):
+    def next_move(self, prev_move: int = 0):
         # print(self.moves_left, self.free_adds, self.free_removes)
         hex_number_ = copy.deepcopy(self.hex_number)
+
+        const = 500
+
+        lower_bound = const
+        if prev_move < const:
+            lower_bound = prev_move
+
         if self.possible_moves is None:
             flattened_array = np.hstack(
                 [hex_digit.get_moves(self.moves_left, self.free_adds, self.free_removes) for hex_digit in
-                 hex_number_])
+                 hex_number_[prev_move-lower_bound:]])
             self.possible_moves = np.sort(flattened_array)[::-1]
 
         if self.last_move >= len(self.possible_moves):
@@ -208,6 +218,7 @@ class Step:
 
 
         best_move = self.possible_moves[self.last_move]
+        prev_move = best_move.digit
 
         hex_number_[best_move.digit].execute_move(best_move)
         self.last_move += 1
@@ -215,7 +226,7 @@ class Step:
         logging.basicConfig(level=logging.DEBUG)
         logging.debug(f"executing {best_move} at {hex_number_[best_move.digit]}")
 
-        return Step(hex_number_, best_move.moves_left, best_move.free_adds, best_move.free_removes)
+        return Step(hex_number_, best_move.moves_left, best_move.free_adds, best_move.free_removes, prev_move)
 
     def print_num(self):
         return "".join([f"{hex_digit.value:x}" for hex_digit in reversed(self.hex_number)])
@@ -234,14 +245,15 @@ def main(hex_number: list, MOVES: int):
     iteration = 0
     
     thing = 0
+    prev_move = len(hex_number) - 1
     while history[-1].moves_left > 0 or history[-1].free_removes > 0 or history[-1].free_adds > 0:
-        new_move = history[-1].next_move()
+        new_move = history[-1].next_move(prev_move)
         
-        if len(history) < 70:
-            print(thing)
-            thing += 1
+        prev_move = new_move.prev_move
+        print(len(history), prev_move)
 
         if new_move is None:
+            print("is none")
             history.pop(-1)
             iteration -= 1
 
@@ -297,6 +309,8 @@ def execute_file(EXAMPLE: int = 0):
             hex_number.append(HexDigit(digit, i))
 
     sollution = main(hex_number, MOVES)
+
+    print(f"Sollution: {sollution}")
 
     length = 20
     gap = 10
