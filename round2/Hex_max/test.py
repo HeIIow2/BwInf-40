@@ -5,6 +5,8 @@ from PIL import Image
 with open('hex.json') as f:
     hex_matrix = json.load(f)
 
+print(hex_matrix)
+
 def draw_digits(img, hex_number: list, move: int, total_moves: int, length: int = 10, gap: int = 5, thickness: int = 2):
     height = move * (gap + length + length) + gap
     digits = len(hex_number)
@@ -28,8 +30,25 @@ def draw_digits(img, hex_number: list, move: int, total_moves: int, length: int 
 
     return img
 
+def is_valid_number(hex_data: list) -> bool:
+    for hex_digit in hex_data:
+        if hex_digit not in hex_matrix:
+            return False
+    return True
 
-def draw(hex_number: list, sollution: list, moves: int, example):
+def save_in_text(hex_data: list, example: int):
+    if not is_valid_number(hex_data):
+        return
+
+    with open(f'solutions/hexmax{example}.txt', "a") as f:
+        for hex_digit in hex_data:
+            digit = hex_matrix.index(hex_digit)
+            f.write(f"{digit:x}")
+        f.write("\n")
+
+def draw(hex_number: list, sollution: list, moves: int, example: int):
+    with open(f'solutions/hexmax{example}.txt', "w") as f:
+        pass
 
     length = 20
     gap = 10
@@ -40,6 +59,8 @@ def draw(hex_number: list, sollution: list, moves: int, example):
 
     start_hex = [hex_matrix[i].copy() for i in hex_number]
     end_hex = [hex_matrix[i].copy() for i in sollution]
+
+    save_in_text(start_hex, example)
 
     img = draw_digits(img, start_hex, 0, moves + 1, length=length, gap=gap, thickness=thickness)
     for i in range(moves):
@@ -64,9 +85,10 @@ def draw(hex_number: list, sollution: list, moves: int, example):
             if to_break:
                 break
 
+        save_in_text(start_hex, example)
         img = draw_digits(img, start_hex, i + 1, moves + 1, length=length, gap=gap, thickness=thickness)
 
-    img.save(f'examples/hexmax{example}.png')
+    img.save(f'solutions/hexmax{example}.png')
 
 
 if __name__ == '__main__':

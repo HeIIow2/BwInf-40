@@ -193,7 +193,7 @@ def revert_illegal_moves(hex_from: list, hex_to_: list, max_moves: int) -> list:
 
 def fill_up_moves(hex_from: list, hex_to_: list, max_moves: int) -> list:
     if len(hex_from) <= 0 or len(hex_to_) <= 0:
-        raise Exception('hex_from or hex_to is empty. Thus the problem is not in revert_illegal_moves')
+        raise Exception('hex_from or hex_to is empty. Thus the problem is not in fill up moves')
     hex_to = hex_to_.copy()
 
 
