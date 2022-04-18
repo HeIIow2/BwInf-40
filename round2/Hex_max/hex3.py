@@ -241,47 +241,49 @@ def fill_up_moves(hex_from: list, hex_to_: list, max_moves: int) -> list:
         if needed_moves_between_hex(hex_from, hex_to) >= max_moves:
             break
 
-
-
-
-
     return hex_to
 
+def execute_moves(hex_number: list, moves: int):
+    hex_length = len(hex_number)
+
+    hex_str = [f"{hex_number[i]:2x}" for i in range(hex_length)]
+    stick_count = get_sticks(hex_str)
+
+    # print(f'hex length: {hex_length}')
+    # print(f'Sticks: {stick_count}')
+
+    with_infinite_moves = get_biggest_hex_infinite(stick_count, hex_length)
+    # print_hex_list(with_infinite_moves)
+
+    # get needed moves between hex numbers
+    needed_moves = needed_moves_between_hex(hex_number, with_infinite_moves)
+    # print(f'Needed moves: {needed_moves}')
+
+    # revert the moves that arent possible
+    if needed_moves <= moves:
+        return hex_number, moves, with_infinite_moves, needed_value_between_hex(hex_number, with_infinite_moves)
+
+    temp_solution = revert_illegal_moves(hex_number, with_infinite_moves, moves)
+    # print_hex_list(temp_solution)
+    solution = fill_up_moves(hex_number, temp_solution, moves)
+    # print_hex_list(solution)
+    # print(needed_value_between_hex(hex_number, solution))
+    # print(needed_value_between_hex(hex_number, solution))
+    return hex_number, moves, solution, needed_value_between_hex(hex_number, solution)
+
+
 def execute_file(file_number: int = 0) -> list:
-    print("\n\n#############################################################################################################################################")
+    # print("\n\n#############################################################################################################################################")
     # read example file
     with open(f'examples/hexmax{file_number}.txt') as f:
         hex_str, moves = f.read().splitlines()
         moves = int(moves)
         hex_number = [int(digit, 16) for digit in hex_str]
-        print(f'Moves: {moves}')
-        print(f'Hex: {hex_str}')
+        # print(f'Moves: {moves}')
+        # print(f'Hex: {hex_str}')
 
-    hex_length = len(hex_str)
-    stick_count = get_sticks(hex_str)
 
-    print(f'hex length: {hex_length}')
-    print(f'Sticks: {stick_count}')
-
-    with_infinite_moves = get_biggest_hex_infinite(stick_count, hex_length)
-    print_hex_list(with_infinite_moves)
-
-    # get needed moves between hex numbers
-    needed_moves = needed_moves_between_hex(hex_number, with_infinite_moves)
-    print(f'Needed moves: {needed_moves}')
-
-    # revert the moves that arent possible
-    if needed_moves <= moves:
-        return with_infinite_moves
-
-    temp_solution = revert_illegal_moves(hex_number, with_infinite_moves, moves)
-    print_hex_list(temp_solution)
-    solution = fill_up_moves(hex_number, temp_solution, moves)
-    print_hex_list(solution)
-    # print(needed_value_between_hex(hex_number, solution))
-    print(needed_value_between_hex(hex_number, solution))
-    return hex_number, moves,solution, needed_value_between_hex(hex_number, solution)
-
+    return execute_moves(hex_number, moves)
 
 
 if __name__ == '__main__':

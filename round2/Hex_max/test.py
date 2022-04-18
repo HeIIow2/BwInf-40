@@ -1,6 +1,11 @@
 import hex3
 import json
 from PIL import Image
+import numpy as np
+import timeit
+import random
+
+import matplotlib.pyplot as plt
 
 with open('hex.json') as f:
     hex_matrix = json.load(f)
@@ -90,10 +95,49 @@ def draw(hex_number: list, sollution: list, moves: int, example: int):
 
     img.save(f'solutions/hexmax{example}.png')
 
+def plot_runtime(x_axis: list, y_axis: list, std: list):
+    plt.plot(x_axis, y_axis, "-o", linewidth=1, label="data")
+
+    plt.errorbar(x_axis, y_axis, yerr=std, linestyle='None', markersize=0,
+                 label=f"Standart Deviation\navr: {round(np.average(std), 3)}")
+
+    plt.grid(visible=True, which='major', axis='both')
+
+
+    plt.title(f"Hex Max")
+    plt.xlabel('operators in therm')
+    plt.ylabel('time in s')
+    plt.legend(loc='upper left')
+    plt.savefig("laufzeit/Laufzeit.svg")
+    plt.savefig("laufzeit/Laufzeit.png")
+    plt.show()
+
+def get_random_exercise(n: int):
+    hex_number = [random.randint(0, 15) for _ in range(n)]
+
+    return hex_number, n
 
 if __name__ == '__main__':
-    for i in range(6):
-        hex_number, moves, solution, meta = hex3.execute_file(i)
-        print("finished starting drawing")
-        draw(hex_number, solution, moves, i)
-        print("finished drawing")
+    x_axis = []
+    y_axis = []
+    std = []
+    for i in range(10, 1000, 50):
+        times = []
+        for j in range(100):
+            hex_number, moves = get_random_exercise(i)
+            start_time = timeit.default_timer()
+            hex_number, moves, solution, meta = hex3.execute_moves(hex_number, moves)
+            end_time = timeit.default_timer()
+            times.append(end_time - start_time)
+
+        n = len(hex_number)
+        avr_time = np.average(times)
+        x_axis.append(n)
+        y_axis.append(avr_time)
+        std.append(np.std(times))
+        print(i)
+    plot_runtime(x_axis, y_axis, std)
+
+    with open("laufzeit/laufzeit.json", "w") as f:
+        json.dump({"x_axis": x_axis, "y_axis": y_axis, "std": std}, f)
+
