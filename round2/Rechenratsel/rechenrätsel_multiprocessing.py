@@ -57,13 +57,14 @@ def generate_operands(n, minimum=0, maximum=9):
     return operands
 
 
-def maybe_get_therm(n, minimum=0, maximum=9):
+def maybe_get_therm(n, operands, minimum=0, maximum=9):
     """
         generiert eine Liste von Operanden
         sucht alle eindeutigen Therme
         gibt alle eindeutigen Therme zurück
 
         :param n: die Anzahl an Operatoren
+        :param operands: optional zu n einfach die Operanden
         :param minimum: der kleinst mögliche Operand
         :param maximum: der größtmögliche Operand
         :return: liste potenzieller Lösungen
@@ -71,8 +72,9 @@ def maybe_get_therm(n, minimum=0, maximum=9):
 
     OPERATORS = [" + ", " - ", " * ", " / "]
 
-    # generiere ein liste von operanden
-    operands = generate_operands(n=n, minimum=minimum, maximum=maximum)
+    # generiere ein liste von operanden oder nimmt die übergebene
+    if operands is None:
+        operands = generate_operands(n=n, minimum=minimum, maximum=maximum)
 
     result_frequencies = compute_combinations(part=0, n=n, operands=operands, threads=1)
 
@@ -144,7 +146,7 @@ def compute_combinations(part, n, operands, threads=4):
     return result_frequencies
 
 
-def maybe_get_therm_multiprocessing(n, minimum=0, maximum=9):
+def maybe_get_therm_multiprocessing(n, operands, minimum=0, maximum=9):
     """
     generiert eine Liste von Operanden
     started threads, die jeweils ein Teil aller Lösungen eindeutigen Therme
@@ -152,13 +154,15 @@ def maybe_get_therm_multiprocessing(n, minimum=0, maximum=9):
     gibt alle eindeutigen Therme zurück
 
     :param n: die Anzahl an Operatoren
+    :param operands: optional zu n einfach die Operanden
     :param minimum: der kleinst mögliche Operand
     :param maximum: der größtmögliche Operand
     :return: liste potenzieller Lösungen
     """
 
-    # generiere ein liste von operanden
-    operands = generate_operands(n=n, minimum=minimum, maximum=maximum)
+    # generiere ein liste von operanden oder nimmt die übergebene
+    if operands is None:
+        operands = generate_operands(n=n, minimum=minimum, maximum=maximum)
 
     with Pool() as pool:
         result = pool.starmap(compute_combinations,
@@ -185,12 +189,13 @@ def maybe_get_therm_multiprocessing(n, minimum=0, maximum=9):
         return unique_therms
 
 
-def get_therm(n: int, minimum=0, maximum=9):
+def get_therm(n: int, operands: list=None, minimum=0, maximum=9):
     """
     https://bwinf.de/fileadmin/bundeswettbewerb/40/aufgaben402.pdf
     Diese Funktion löst die Aufgabe Rechenrätsel
 
     :param n: die Anzahl an Operatoren
+    :param operands: optional zu n einfach die Operanden
     :param minimum: der kleinst mögliche Operand
     :param maximum: der größtmögliche Operand
     :return: tuple (Lösung, Aufgabe)
@@ -203,6 +208,10 @@ def get_therm(n: int, minimum=0, maximum=9):
         random_number = random.randint(minimum + 1, maximum)
         return f"{random_number} = {random_number}", f"{random_number} = {random_number}"
 
+    mixing_afterwards = True
+    if operands is not None:
+        mixing_afterwards = False
+
     """
     füllt die Liste mit möglichen Ergebnissen auf.
     nutzt ab n < 8 Parallelisierung, da vorher thread pulling 
@@ -211,9 +220,10 @@ def get_therm(n: int, minimum=0, maximum=9):
     results = []
     while not len(results):
         if n < 8:
-            results = maybe_get_therm(n, minimum=minimum, maximum=maximum)
+            results = maybe_get_therm(n, operands, minimum=minimum, maximum=maximum)
         else:
-            results = maybe_get_therm_multiprocessing(n, minimum=minimum, maximum=maximum)
+            results = maybe_get_therm_multiprocessing(n, operands, minimum=minimum, maximum=maximum)
+        operands = None
 
     """
     da negative operatoren (-, /) vergleichsweise selten sind suche die Lösung
@@ -245,7 +255,7 @@ def get_therm(n: int, minimum=0, maximum=9):
     therm = best_result['therm']
 
     # mische den Therm noch einmal
-    def mix_therm(therm_: str):
+    def mix_therm():
         therm_list = therm.split(" + ")
         random.shuffle(therm_list)
         return " + ".join(therm_list)
@@ -254,11 +264,31 @@ def get_therm(n: int, minimum=0, maximum=9):
     def censor_therm(therm_: str):
         return therm_.replace(" + ", u" ◦ ").replace(" - ", u" ◦ ").replace(" * ", u" ◦ ").replace(" / ", u" ◦ ")
 
-    finished_therm = mix_therm(therm)
+    if mixing_afterwards:
+        finished_therm = mix_therm()
+    else:
+        finished_therm = therm
 
     return f"{finished_therm} = {int(result)}", f"{censor_therm(finished_therm)} = {int(result)}"
 
 
 if __name__ == "__main__":
     freeze_support()
-    print(get_therm(7))
+    while True:
+        input_ = input("\ntype 'n: <n>' to specify n else just type the desired operands seperated by space: ")
+        if input_ == "exit":
+            break
+
+        if "n:" in input_:
+            n = int(input_.split(":")[1])
+            operands = None
+        else:
+            try:
+                operands = [int(x) for x in input_.split(" ")]
+                n = len(operands) - 1
+            except ValueError:
+                print("invalid input")
+                continue
+
+        print("computing...")
+        print(get_therm(n, operands=operands))

@@ -1,0 +1,37 @@
+\babel@toc {ngerman}{}\relax 
+\contentsline {section}{\numberline {1}L\IeC {\"o}sungsidee}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}naive Herangehensweise}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}erfolgreiche Herangehensweise}{2}{subsection.1.2}%
+\contentsline {section}{\numberline {2}Laufzeitanalyse}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Theoretische Laufzeitanalyse}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}experimentelle Laufzeitanalyse}{2}{subsection.2.2}%
+\contentsline {section}{\numberline {3}Umsetzung}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Das generieren der Operanden}{3}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Alle m\IeC {\"o}glichen Operatoren ausprobieren}{4}{subsection.3.2}%
+\contentsline {paragraph}{\nonumberline Das Zusammenf\IeC {\"u}hren und Ausw\IeC {\"a}hlen des Therms}{4}{paragraph*.3}%
+\contentsline {subsection}{\numberline {3.3}multiprocessing}{4}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Erweiterung}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Beispiele}{5}{subsection.4.1}%
+\contentsline {paragraph}{\nonumberline PI}{5}{paragraph*.5}%
+\contentsline {paragraph}{\nonumberline Fibonacci}{5}{paragraph*.7}%
+\contentsline {paragraph}{\nonumberline 69}{5}{paragraph*.9}%
+\contentsline {paragraph}{\nonumberline range}{5}{paragraph*.11}%
+\contentsline {section}{\numberline {5}Beispiele}{5}{section.5}%
+\contentsline {paragraph}{\nonumberline $n=0$}{5}{paragraph*.13}%
+\contentsline {paragraph}{\nonumberline $n=1$}{6}{paragraph*.15}%
+\contentsline {paragraph}{\nonumberline $n=2$}{6}{paragraph*.17}%
+\contentsline {paragraph}{\nonumberline $n=3$}{6}{paragraph*.19}%
+\contentsline {paragraph}{\nonumberline $n=4$}{6}{paragraph*.21}%
+\contentsline {paragraph}{\nonumberline $n=5$}{7}{paragraph*.23}%
+\contentsline {paragraph}{\nonumberline $n=6$}{7}{paragraph*.25}%
+\contentsline {paragraph}{\nonumberline $n=7$}{7}{paragraph*.27}%
+\contentsline {paragraph}{\nonumberline $n=8$}{7}{paragraph*.29}%
+\contentsline {paragraph}{\nonumberline $n=9$}{8}{paragraph*.31}%
+\contentsline {paragraph}{\nonumberline $n=10$}{8}{paragraph*.33}%
+\contentsline {paragraph}{\nonumberline $n=11$}{8}{paragraph*.35}%
+\contentsline {paragraph}{\nonumberline $n=12$}{8}{paragraph*.37}%
+\contentsline {paragraph}{\nonumberline $n=13$}{9}{paragraph*.39}%
+\contentsline {paragraph}{\nonumberline $n=14$}{9}{paragraph*.41}%
+\contentsline {paragraph}{\nonumberline $n=15$}{9}{paragraph*.43}%
+\contentsline {section}{\numberline {6}Quellcode}{9}{section.6}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
